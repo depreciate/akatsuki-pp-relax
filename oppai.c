@@ -2525,8 +2525,9 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   float ar_bonus, low_ar_bonus;
   float final_multiplier;
   float acc_bonus, od_bonus;
-  /* Akatsuki's custom PP variables! */
-  float aim_crosscheck, streams_nerf;
+  /* Akatsuki's custom PP variables!
+  float streams_nerf; */
+  float aim_crosscheck;
 
   /* acc used for pp is different in scorev1 because it ignores sliders */
   float real_acc;
@@ -2624,8 +2625,8 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   pp->aim *= od_bonus;
   pp->aim *= aim_crosscheck;
 
-  /* speed pp -------------------------------------------------------- */
-  pp->speed = base_pp(speed);
+  /* speed pp --------------------------------------------------------
+  pp->speed = base_pp(speed); */
 
   /* acc pp ---------------------------------------------------------- */
   /* arbitrary values tom crafted out of trial and error */
@@ -2648,13 +2649,13 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   /* total pp -------------------------------------------------------- */
   final_multiplier = 1.12f;
 
-  /* Akatsuki's rather disgusting method of pp removal #2 */
+  /* Akatsuki's outdated stream nerfs; from pre-feb 2019 pp changes
   streams_nerf = pp->aim / (pp->speed * 1.175f);
   if (streams_nerf < 1.0f) {
     pp->aim *= streams_nerf / 1.2f;
   }
 
-  /* old streams_nerf
+   old streams_nerf
   streams_nerf = (pp->speed < (float)pow(pp->aim, 1.2f) + (float)pow(pp->acc, 1.1f) && pp->speed > 50.0f) ? (float)pow(pp->speed, 1.08f) - (0.35f * pp->speed) : 1.0f;
   if (streams_nerf > 0) {
     final_nerf = streams_nerf;
