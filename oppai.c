@@ -2591,7 +2591,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   /* hidden */
   if (mods & MODS_HD) {
-    pp->aim *= 1.01f + (float)pow(11.0f - mapstats.ar, 1.2f) * 0.035f;
+    pp->aim *= 1.02f + (float)pow(11.0f - mapstats.ar, 1.2f) * 0.035f;
   }
 
   /* flashlight */
