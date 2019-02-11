@@ -2518,16 +2518,15 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
     0.4f * mymin(1.0f, nobjects_over_2k) +
     (nobjects > 2000 ? (float)log10(nobjects_over_2k) * 0.5f : 0.0f)
   );
-  float miss_penality = (float)pow(0.97f, nmiss);
+  float miss_penality = (float)pow(0.97f, nmiss + (n50 * 0.35f));
   float combo_break = (
     (float)pow(combo, 0.8f) / (float)pow(max_combo, 0.8f)
   );
-  float ar_bonus;
+  float ar_bonus, low_ar_bonus;
   float final_multiplier;
   float acc_bonus, od_bonus;
-  float od_squared;
-  float acc_od_bonus;
-  float hd_bonus;
+  /* Akatsuki's custom PP variables! */
+  float aim_crosscheck, streams_nerf;
 
   /* acc used for pp is different in scorev1 because it ignores sliders */
   float real_acc;
@@ -2572,13 +2571,14 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   ar_bonus = 1.0f;
 
   /* high ar bonus */
-  if (mapstats.ar > 10.33f) {
-    ar_bonus += 0.3f * (mapstats.ar - 10.33f);
+  if (mapstats.ar >= 10.87f) {
+    ar_bonus += 0.3f * (mapstats.ar - 10.87f);
   }
 
   /* low ar bonus */
-  else if (mapstats.ar < 8.0f) {
-    ar_bonus += 0.01f * (8.0f - mapstats.ar);
+  else if (mapstats.ar <= 10.0f) {
+    low_ar_bonus = 0.025f * (10.0f - mapstats.ar);
+    ar_bonus += low_ar_bonus;
   }
 
   /* aim pp ---------------------------------------------------------- */
@@ -2589,12 +2589,9 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   pp->aim *= ar_bonus;
 
   /* hidden */
-  hd_bonus = 1.0f;
   if (mods & MODS_HD) {
-    hd_bonus += 0.04f * (12.0f - mapstats.ar);
+    pp->aim *= 1.04f + (float)pow(11.0f - mapstats.ar, 1.2f) * 0.05f;
   }
-
-  pp->aim *= hd_bonus;
 
   /* flashlight */
   if (mods & MODS_FL) {
@@ -2611,40 +2608,36 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   /* acc bonus (bad aim can lead to bad acc) */
   acc_bonus = 0.5f + pp->accuracy / 2.0f;
 
-  /* od bonus (high od requires better aim timing to acc) */
-  od_squared = (float)pow(mapstats.od, 2);
-  od_bonus = 0.98f + od_squared / 2500.0f;
+  /* od bonus (only applied on relax if od is > 10 due to being overweighted
+   * and insignificant otherwise)
+   * 1.0 - 1.0571 
+   * 1.0+\frac{\left(10.0-x\right)^2}{17.5}
+   */
+  od_bonus = (mapstats.od > 10.0f) ? 1.0f + (float)pow(10.0f - mapstats.od, 2.0f) / 17.5f : 1.0f;
+
+  /* akatsuki's main accuracy / aim pp crossover | 0.6 - 1.1 (mymaxed to 0.75)
+   * 0.6+\frac{x^{24}}{2}
+   */
+  aim_crosscheck = mymax(0.75f, 0.6f + (float)pow(real_acc, 3.0f) / 2.0f);
 
   pp->aim *= acc_bonus;
   pp->aim *= od_bonus;
+  pp->aim *= aim_crosscheck;
 
   /* speed pp -------------------------------------------------------- */
   pp->speed = base_pp(speed);
-  pp->speed *= length_bonus;
-  pp->speed *= miss_penality;
-  pp->speed *= combo_break;
-  pp->speed *= ar_bonus;
-  pp->speed *= hd_bonus;
-
-  /* scale speed with acc and od */
-  acc_od_bonus = 1.0f / (
-    1.0f + exp(-20.0f * (pp->accuracy + od_squared / 2310.0f - 0.8733f))
-  ) / 1.89f;
-  acc_od_bonus += od_squared / 5000.0f + 0.49f;
-
-  pp->speed *= acc_od_bonus;
 
   /* acc pp ---------------------------------------------------------- */
   /* arbitrary values tom crafted out of trial and error */
-  pp->acc = (float)pow(1.52163f, mapstats.od) *
-    (float)pow(real_acc, 24.0f) * 2.83f;
+  pp->acc = (float)pow(1.52163f, 5.0f + mapstats.od / 2.0f) *
+    (float)pow(real_acc, 18.0f) * 2.83f;
 
   /* length bonus (not the same as speed/aim length bonus) */
   pp->acc *= mymin(1.15f, (float)pow(ncircles / 1000.0f, 0.3f));
 
   /* hidden bonus */
   if (mods & MODS_HD) {
-    pp->acc *= 1.08f;
+    pp->acc *= 1.035f;
   }
 
   /* flashlight bonus */
@@ -2655,22 +2648,26 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   /* total pp -------------------------------------------------------- */
   final_multiplier = 1.12f;
 
-  /* nofail */
-  if (mods & MODS_NF) {
-    final_multiplier *= 0.90f;
+  /* Akatsuki's rather disgusting method of pp removal #2 */
+  streams_nerf = pp->aim / (pp->speed * 1.175f);
+  if (streams_nerf < 1.0f) {
+    pp->aim *= streams_nerf / 1.2f;
   }
 
-  /* spun-out */
-  if (mods & MODS_SO) {
-    final_multiplier *= 0.95f;
+  /* old streams_nerf
+  streams_nerf = (pp->speed < (float)pow(pp->aim, 1.2f) + (float)pow(pp->acc, 1.1f) && pp->speed > 50.0f) ? (float)pow(pp->speed, 1.08f) - (0.35f * pp->speed) : 1.0f;
+  if (streams_nerf > 0) {
+    final_nerf = streams_nerf;
+  } else {
+    final nerf = 0;
   }
+  */
 
   pp->total = (float)(
     pow(
-      pow(pp->aim, 1.1f) +
-      pow(pp->speed, 1.1f) +
-      pow(pp->acc, 1.1f),
-      1.0f / 1.1f
+      pow(pp->aim, 1.186f) +
+      pow(pp->acc, 1.13f),
+      0.99f / 1.1f
     ) * final_multiplier
   );
 
