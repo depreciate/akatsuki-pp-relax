@@ -2515,8 +2515,8 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   float nobjects_over_2k = nobjects / 2000.0f;
   float length_bonus = (
     0.95f +
-    0.6f * mymin(1.0f, nobjects_over_2k) +
-    (nobjects > 2000 ? (float)log10(nobjects_over_2k) * 0.75f : 0.0f)
+    0.4f * mymin(1.0f, nobjects_over_2k) +
+    (nobjects > 2000 ? (float)log10(nobjects_over_2k) * 0.5f : 0.0f)
   );
   float miss_penality = (float)pow(0.97f, nmiss + (n50 * 0.35f));
   float combo_break = (
@@ -2573,12 +2573,12 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   /* high ar bonus */
   if (mapstats.ar >= 10.87f) {
-    ar_bonus += 0.35f * (mapstats.ar - 10.87f);
+    ar_bonus += 0.3f * (mapstats.ar - 10.87f);
   }
 
   /* low ar bonus */
   else if (mapstats.ar <= 10.0f) {
-    low_ar_bonus = 0.0275f * (10.0f - mapstats.ar);
+    low_ar_bonus = 0.025f * (10.0f - mapstats.ar);
     ar_bonus += low_ar_bonus;
   }
 
@@ -2617,9 +2617,9 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   od_bonus = (mapstats.od > 10.0f) ? 1.0f + (float)pow(10.0f - mapstats.od, 2.0f) / 17.5f : 1.0f;
 
   /* akatsuki's main accuracy / aim pp crossover | 0.6 - 1.1 (mymaxed to 0.75)
-   * 0.6+\frac{x^{2.75}}{2}
+   * 0.6+\frac{x^{24}}{2}
    */
-  aim_crosscheck = mymax(0.75f, 0.6f + (float)pow(real_acc, 2.75f) / 2.0f);
+  aim_crosscheck = mymax(0.75f, 0.6f + (float)pow(real_acc, 3.0f) / 2.0f);
 
   pp->aim *= acc_bonus;
   pp->aim *= od_bonus;
@@ -2666,8 +2666,8 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   pp->total = (float)(
     pow(
-      pow(pp->aim, 1.191f) +
-      pow(pp->acc, 1.131f),
+      pow(pp->aim, 1.186f) +
+      pow(pp->acc, 1.13f),
       0.99f / 1.1f
     ) * final_multiplier
   );
