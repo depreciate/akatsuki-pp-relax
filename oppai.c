@@ -2647,7 +2647,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   }
 
   /* total pp -------------------------------------------------------- */
-  final_multiplier = 0.75f;
+  final_multiplier = 0.84f;
 
   /* Akatsuki's outdated stream nerfs; from pre-feb 2019 pp changes
   streams_nerf = pp->aim / (pp->speed * 1.175f);
