@@ -14,3 +14,5 @@ tags
 *.exp
 /test/test_suite
 /test/oppai_test
+*.osu
+oppai-old
