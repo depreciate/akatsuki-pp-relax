@@ -2573,7 +2573,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   /* high ar bonus */
   if (mapstats.ar >= 10.87f) {
-    ar_bonus += 0.3f * (mapstats.ar - 10.87f);
+    ar_bonus += 0.45f * (mapstats.ar - 10.87f);
   }
 
   /* low ar bonus */
