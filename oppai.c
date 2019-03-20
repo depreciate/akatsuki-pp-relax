@@ -2515,7 +2515,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   float nobjects_over_2k = nobjects / 2000.0f;
   float length_bonus = (
     0.95f +
-    0.4f * mymin(1.0f, nobjects_over_2k) +
+    0.5f * mymin(1.0f, nobjects_over_2k) +
     (nobjects > 2000 ? (float)log10(nobjects_over_2k) * 0.5f : 0.0f)
   );
   float miss_penality = (float)pow(0.97f, nmiss + (n50 * 0.35f));
@@ -2524,8 +2524,8 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   );
   float ar_bonus, low_ar_bonus;
   float acc_bonus, od_bonus;
-  /* Akatsuki's custom PP variables!
-  float streams_nerf; */
+  /* Akatsuki's custom PP variables! */
+  float streams_nerf;
   float aim_crosscheck;
 
   /* acc used for pp is different in scorev1 because it ignores sliders */
@@ -2624,8 +2624,8 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   pp->aim *= od_bonus;
   pp->aim *= aim_crosscheck;
 
-  /* speed pp --------------------------------------------------------
-  pp->speed = base_pp(speed); */
+  /* speed pp -------------------------------------------------------- */
+  pp->speed = base_pp(speed);
 
   /* acc pp ---------------------------------------------------------- */
   /* arbitrary values tom crafted out of trial and error */
@@ -2647,12 +2647,13 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   /* total pp -------------------------------------------------------- */
 
-  /* Akatsuki's outdated stream nerfs; from pre-feb 2019 pp changes
+  /* Akatsuki's outdated stream nerfs; from pre-feb 2019 pp changes */
   streams_nerf = pp->aim / (pp->speed * 1.175f);
   if (streams_nerf < 1.0f) {
-    pp->aim *= streams_nerf / 1.2f;
+    pp->aim *= pow(streams_nerf, 1.15f);
   }
 
+ /*
    old streams_nerf
   streams_nerf = (pp->speed < (float)pow(pp->aim, 1.2f) + (float)pow(pp->acc, 1.1f) && pp->speed > 50.0f) ? (float)pow(pp->speed, 1.08f) - (0.35f * pp->speed) : 1.0f;
   if (streams_nerf > 0) {
@@ -2664,8 +2665,8 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   pp->total = (float)(
     pow(
-      pow(pp->aim, 1.16f) +
-      pow(pp->acc, 1.19f),
+      pow(pp->aim, 1.158f) +
+      pow(pp->acc, 1.183f),
       0.99f / 1.1f
     )
   );
