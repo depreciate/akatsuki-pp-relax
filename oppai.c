@@ -2523,7 +2523,6 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
     (float)pow(combo, 0.8f) / (float)pow(max_combo, 0.8f)
   );
   float ar_bonus, low_ar_bonus;
-  float final_multiplier;
   float acc_bonus, od_bonus;
   /* Akatsuki's custom PP variables!
   float streams_nerf; */
@@ -2573,7 +2572,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   /* high ar bonus */
   if (mapstats.ar >= 10.87f) {
-    ar_bonus += 0.45f * (mapstats.ar - 10.87f);
+    ar_bonus += 0.65f * (mapstats.ar - 10.87f);
   }
 
   /* low ar bonus */
@@ -2614,7 +2613,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
    * 1.0 - 1.0571 
    * 1.0+\frac{\left(10.0-x\right)^2}{17.5}
    */
-  od_bonus = (mapstats.od > 10.0f) ? 1.0f + (float)pow(10.0f - mapstats.od, 2.0f) / 17.5f : 1.0f;
+  od_bonus = (mapstats.od > 10.0f) ? 1.0f + (float)pow(10.0f - mapstats.od, 2.0f) / 12.5f : 1.0f;
 
   /* akatsuki's main accuracy / aim pp crossover | 0.6 - 1.1 (mymaxed to 0.75)
    * 0.6+\frac{x^{24}}{2}
@@ -2647,7 +2646,6 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   }
 
   /* total pp -------------------------------------------------------- */
-  final_multiplier = 0.84f;
 
   /* Akatsuki's outdated stream nerfs; from pre-feb 2019 pp changes
   streams_nerf = pp->aim / (pp->speed * 1.175f);
@@ -2666,10 +2664,10 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   pp->total = (float)(
     pow(
-      pow(pp->aim, 1.186f) +
-      pow(pp->acc, 1.13f),
+      pow(pp->aim, 1.16f) +
+      pow(pp->acc, 1.19f),
       0.99f / 1.1f
-    ) * final_multiplier
+    )
   );
 
   return 0;
