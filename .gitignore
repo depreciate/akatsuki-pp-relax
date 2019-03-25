@@ -16,3 +16,6 @@ tags
 /test/oppai_test
 *.osu
 oppai-old
+*.txt
+*.py
+/.vs
