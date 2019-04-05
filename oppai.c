@@ -2647,13 +2647,12 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   /* total pp -------------------------------------------------------- */
 
-  /* Akatsuki's outdated stream nerfs; from pre-feb 2019 pp changes */
+  /* Akatsuki's outdated stream nerfs; from pre-feb 2019 pp changes
   streams_nerf = pp->aim / (pp->speed);
   if (streams_nerf < 1.0f) {
     pp->aim *= pow(pow(streams_nerf, 0.75), 1.075f);
   }
 
- /*
    old streams_nerf
   streams_nerf = (pp->speed < (float)pow(pp->aim, 1.2f) + (float)pow(pp->acc, 1.1f) && pp->speed > 50.0f) ? (float)pow(pp->speed, 1.08f) - (0.35f * pp->speed) : 1.0f;
   if (streams_nerf > 0) {
