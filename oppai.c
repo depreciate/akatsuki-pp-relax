@@ -2571,13 +2571,13 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   ar_bonus = 1.0f;
 
   /* high ar bonus */
-  if (mapstats.ar >= 10.87f) {
-    ar_bonus += 0.65f * (mapstats.ar - 10.87f);
+  if (mapstats.ar >= 10.67f) {
+    ar_bonus += 0.45f * (mapstats.ar - 10.7f);
   }
 
   /* low ar bonus */
-  else if (mapstats.ar <= 10.0f) {
-    low_ar_bonus = 0.025f * (10.0f - mapstats.ar);
+  else if (mapstats.ar <= 8.5f) {
+    low_ar_bonus = 0.025f * (8.5f - mapstats.ar);
     ar_bonus += low_ar_bonus;
   }
 
@@ -2615,7 +2615,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
    */
   od_bonus = (mapstats.od > 10.0f) ? 1.0f + (float)pow(10.0f - mapstats.od, 2.0f) / 12.5f : 1.0f;
 
-  /* akatsuki's main accuracy / aim pp crossover | 0.6 - 1.1 (mymaxed to 0.75)
+  /* akatsuki's main accuracy / aim pp crosscheck | 0.6 - 1.1 (max to 0.75)
    * 0.6+\frac{x^{24}}{2}
    */
   aim_crosscheck = mymax(0.75f, 0.6f + (float)pow(real_acc, 3.0f) / 2.0f);
@@ -2645,23 +2645,27 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
     pp->acc *= 1.02f;
   }
 
-  /* total pp -------------------------------------------------------- */
+  // NOTE: These functions are both (very) bad and outdated!
+  // They should not be used, as critical flaws have been discorvered
+  // in both of them. Instead, you might be best to just try making
+  // one yourself :^)
 
   /* Akatsuki's outdated stream nerfs; from pre-feb 2019 pp changes
-  streams_nerf = pp->aim / (pp->speed);
-  if (streams_nerf < 1.0f) {
-    pp->aim *= pow(pow(streams_nerf, 0.75), 1.075f);
-  }
+   * streams_nerf = pp->aim / (pp->speed);
+   * if (streams_nerf < 1.0f) {
+   *   pp->aim *= pow(pow(streams_nerf, 0.75), 1.075f);
+   * }
+   *
+   * Akatsuki's (even more outdated) streams nerf.
+   * streams_nerf = (pp->speed < (float)pow(pp->aim, 1.2f) + (float)pow(pp->acc, 1.1f) && pp->speed > 50.0f) ? (float)pow(pp->speed, 1.08f) - (0.35f * pp->speed) : 1.0f;
+   * if (streams_nerf > 0) {
+   *   final_nerf = streams_nerf;
+   * } else {
+   *   final nerf = 0;
+   * }
+   */
 
-   old streams_nerf
-  streams_nerf = (pp->speed < (float)pow(pp->aim, 1.2f) + (float)pow(pp->acc, 1.1f) && pp->speed > 50.0f) ? (float)pow(pp->speed, 1.08f) - (0.35f * pp->speed) : 1.0f;
-  if (streams_nerf > 0) {
-    final_nerf = streams_nerf;
-  } else {
-    final nerf = 0;
-  }
-  */
-
+  /* total pp -------------------------------------------------------- */
   pp->total = (float)(
     pow(
       pow(pp->aim, 1.158f) +
