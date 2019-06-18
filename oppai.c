@@ -2648,10 +2648,11 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
     pp->acc *= 1.02f;
   }
 
-  // NOTE: These functions are both (very) bad and outdated!
-  // They should not be used, as critical flaws have been discorvered
-  // in both of them. Instead, you might be best to just try making
-  // one yourself :^)
+  /* NOTE: These functions are both (very) bad and outdated!
+   * They should not be used, as critical flaws have been discorvered
+   * in both of them. Instead, you might be best to just try making
+   * one yourself :^)
+   */
 
   /* Akatsuki's outdated stream nerfs; from pre-feb 2019 pp changes
    * streams_nerf = pp->aim / (pp->speed);
