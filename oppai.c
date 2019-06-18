@@ -2034,6 +2034,9 @@ int d_std(diff_calc_t* d, int mods) {
   mods_apply(mods, &mapstats, APPLY_CS);
   d->speed_mul = mapstats.speed;
 
+/* CS changes in desmos in a nutshell
+    r=\left(\frac{w}{16}\right)1.0-0.7\cdot\frac{\left(c-5.0\right)}{5.0}
+  */
   radius = (
     (PLAYFIELD_WIDTH / 16.0f) *
     (1.0f - 0.7f * ((float)mapstats.cs - 5.0f) / 5.0f)
@@ -2048,7 +2051,7 @@ int d_std(diff_calc_t* d, int mods) {
   /* cs buff (originally from osuElements) */
   if (radius < CIRCLESIZE_BUFF_TRESHOLD) {
     scaling_factor *=
-      1.0f + mymin((CIRCLESIZE_BUFF_TRESHOLD - radius), 9.25f) / 22.5f;
+      1.0f + mymin((CIRCLESIZE_BUFF_TRESHOLD - radius), 7.125f) / 36.25f;
   }
 
   /* calculate normalized positions */
