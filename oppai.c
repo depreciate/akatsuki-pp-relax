@@ -2527,6 +2527,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   );
   float ar_bonus, low_ar_bonus;
   float acc_bonus, od_bonus;
+	float hd_bonus;
   /* Akatsuki's custom PP variables!
   float streams_nerf;*/
   float aim_crosscheck;
@@ -2592,9 +2593,12 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   pp->aim *= ar_bonus;
 
   /* hidden */
+  hd_bonus = 1.0f;
   if (mods & MODS_HD) {
-    pp->aim *= 1.04f + (12.0f - mapstats.ar);
+    hd_bonus += 0.04f * (12.0f - mapstats.ar);
   }
+
+  pp->aim *= hd_bonus;
 
   /* flashlight */
   if (mods & MODS_FL) {
