@@ -2527,8 +2527,8 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   );
   float ar_bonus, low_ar_bonus;
   float acc_bonus, od_bonus;
-  /* Akatsuki's custom PP variables! */
-  float streams_nerf;
+  /* Akatsuki's custom PP variables!
+  float streams_nerf;*/
   float aim_crosscheck;
 
   /* acc used for pp is different in scorev1 because it ignores sliders */
