@@ -2518,7 +2518,7 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
   float nobjects_over_2k = nobjects / 2000.0f;
   float length_bonus = (
     0.95f +
-    0.5f * mymin(1.0f, nobjects_over_2k) +
+    0.4f * mymin(1.0f, nobjects_over_2k) +
     (nobjects > 2000 ? (float)log10(nobjects_over_2k) * 0.5f : 0.0f)
   );
   float miss_penality = (float)pow(0.97f, nmiss + (n50 * 0.35f));
@@ -2593,12 +2593,12 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   /* hidden */
   if (mods & MODS_HD) {
-    pp->aim *= 1.02f + (float)pow(11.0f - mapstats.ar, 1.2f) * 0.035f;
+    pp->aim *= 1.04f + (12.0f - mapstats.ar);
   }
 
   /* flashlight */
   if (mods & MODS_FL) {
-    float fl_bonus = 1.0f + 0.35f * mymin(1.0f, nobjects / 200.0f);
+    float fl_bonus = 1.0f + 0.35f * mymin(1.0f, nobjects / 200.0f); /* 0 notes: 1 | 200 notes: 1.35 */
     if (nobjects > 200) {
       fl_bonus += 0.3f * mymin(1, (nobjects - 200) / 300.0f);
     }
@@ -2632,21 +2632,16 @@ int ppv2x(pp_calc_t* pp, float aim, float speed, float base_ar,
 
   /* acc pp ---------------------------------------------------------- */
   /* arbitrary values tom crafted out of trial and error */
-  pp->acc = (float)pow(1.52163f, 5.0f + mapstats.od / 2.0f) *
-    (float)pow(real_acc, 18.0f) * 2.83f;
+  pp->acc = (float)pow(1.52163f, 5.0f + mapstats.od / 2.0f) * (float)pow(real_acc, 18.0f) * 2.83f;
 
   /* length bonus (not the same as speed/aim length bonus) */
   pp->acc *= mymin(1.15f, (float)pow(ncircles / 1000.0f, 0.3f));
 
   /* hidden bonus */
-  if (mods & MODS_HD) {
-    pp->acc *= 1.035f;
-  }
+  if (mods & MODS_HD) pp->acc *= 1.08f;
 
-  /* flashlight bonus */
-  if (mods & MODS_FL) {
-    pp->acc *= 1.02f;
-  }
+  /* flashlight bonus (top 10 why does fl give accuracy pp moments in gaming)
+  if (mods & MODS_FL) pp->acc *= 1.02f;*/
 
   /* NOTE: These functions are both (very) bad and outdated!
    * They should not be used, as critical flaws have been discorvered
